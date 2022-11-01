@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h1>Listado de modulos</h1>
+        <h1 class="titulo">Modulos</h1>
         <button class="boton-crear blanco-a" @click="mostrarFormulario">
             <i class="fa-solid fa-plus"></i>
             Crear modulo
@@ -24,6 +24,7 @@
 <script>
 import { defineAsyncComponent } from 'vue';
 import modulosServicio from '../../services/modulosServicio.js';
+import { Bar } from 'vue-chartjs'
 
 export default {
     components: {

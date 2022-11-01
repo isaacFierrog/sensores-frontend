@@ -4,17 +4,12 @@ import { defineAsyncComponent } from 'vue'
 
 export default {
   components: {
-    Navbar: defineAsyncComponent(
-      () => import('./modules/shared/components/Navbar.vue')
+    Header: defineAsyncComponent(
+      () => import('./modules/shared/components/HeaderComponent.vue')
     )
   },
   data() {
-    return {
-      links: [
-          { to: '/usuarios', name: 'Usuarios' },
-          { to: '/modulos', name: 'Modulos' }
-      ]
-    }
+    return {}
   },
   mounted() {
     console.log('Aplicacion iniciada');
@@ -24,7 +19,7 @@ export default {
 
 <template>
   <div class="container">
-    <Navbar :links="links"/>
+    <Header></Header>
     <RouterView />
   </div>
 </template>

@@ -1,6 +1,8 @@
 /*Variables*/
 :root{
-  --color-primario: rgb(10, 12, 14);
+  --color-primario: #16161a;
+  --color-headers: #fffffe;
+  --color-text: #5f6c7b;
   --color-secundario: rgb(19, 18, 24);
   --color-submit: rgb(70, 55, 121);
   --color-submit-resaltado: rgb(99, 77, 170);
@@ -18,15 +20,24 @@ html{
 }
 body{
   font-size: 1.6rem;
-  color:rgb(233, 233, 233);
+  color: var(--color-text);
   background-color: var(--color-primario);
 }
 
 /*Estilos generales*/
+h1,h2,h3{
+  color: var(--color-headers);
+}
+a{
+  text-decoration: none;
+}
 .container{
   width: 100%;
   max-width: 100rem;
   margin: 0 auto;
+}
+.titulo{
+  margin-bottom: 2rem;
 }
 .boton-cerrar{
   position: absolute;

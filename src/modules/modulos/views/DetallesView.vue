@@ -5,17 +5,28 @@
             <h3>Modulo: {{ modulo.mac }}</h3>
             <p>Zona: {{ modulo.area }}</p>
             <p>Mina: {{ modulo.mina }}</p>
-            <ul>
-                <li v-for="sensor in modulo.sensores">
+            <section class="sensores" v-if="modulo">
+                <article v-for="sensor in modulo.sensores"
+                        class="sensor"
+                        :class="estadoSensor(sensor.datos)"
+                        :key="sensor">
+                        <p>{{ sensor.clave }}: {{ ultimoValor(sensor.datos) }}</p>
+                </article>
+            </section>
+
+            <!-- <ul>
+                <li v-for="sensor in modulo.sensores"
+                    :key="sensor">
                     <p>Clave: {{ sensor.clave }}</p>
                     <ul>
-                        <li v-for="dato in sensor.datos">
+                        <li v-for="dato in sensor.datos"
+                            :key="dato">
                             <p>----Estado: {{ dato.estado }}</p>
                             <p>----Valor: {{ dato.valor }}</p>
                         </li>
                     </ul>
                 </li>
-            </ul>
+            </ul> -->
         </article>
     </div>
 </template>
@@ -62,6 +73,38 @@ export default {
                 console.log(`Error ${status}: ${mensaje}`);
             }
         }
+    },
+    computed: {
+        ultimoValor(){
+            return datos => datos.pop().valor
+        },
+        estadoSensor(){
+            return datos => datos.pop().estado
+                                    ? 'sensor--activo'
+                                    : 'sensor--inactivo'
+        }
     }
 }
 </script>
+
+<style scoped>
+    .sensores{
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 1rem;
+    }
+    .sensor{
+        flex-basis: calc((100% / 4) - 1rem);
+        display: flex;
+        padding: 2rem;
+        background-color: antiquewhite;
+        border: none;
+        border-radius: 1rem;
+    }
+    .sensor--activo{
+        border-right: 4rem solid rgb(68, 175, 68);
+    }
+    .sensor--inactivo{
+        border-right: 4rem solid rgb(190, 78, 78);
+    }
+</style>

@@ -32,9 +32,9 @@ export default {
         margin: 0 .3rem;
         margin-bottom: .8rem;
         padding: 2rem 2rem;
-        background-color: rgb(19, 18, 24);
+        background-color: #72757e;
         border: none;
-        border-top: 3rem solid rgb(56, 199, 115);
+        border-top: 3rem solid #094067;
         border-radius: 1.5rem;
         transition: all .3s ease-in-out;
     }
