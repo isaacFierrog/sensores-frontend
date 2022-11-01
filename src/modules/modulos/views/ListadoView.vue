@@ -10,7 +10,7 @@
             @ocultarFormulario="mostrarFormulario"
             @refrescarModulos="refrescarModulos">
         </ModuloForm>
-        <section class="modulos">
+        <section class="modulos" v-if="modulos">
             <Modulo 
                 v-for="modulo in modulos"
                 :key="modulo.id"

@@ -8,7 +8,7 @@
             <p class="blanco-a form__label">Mina</p>
             <select class="form__input" v-model="mina">
                 <option
-                    v-for="m) in minas"
+                    v-for="m in minas"
                     :key="m"
                     :value="m">
                     {{ m }}
@@ -24,9 +24,9 @@
                 </option>
             </select>
             <section class="sensores">
-                <button class="sensores__boton blanco-a" @click="eliminarSensores">-</button>
+                <div class="sensores__boton blanco-a" @click="eliminarSensores">-</div>
                 <p>Sensores: {{ numSensores }}</p>
-                <button class="sensores__boton blanco-a" @click="agregarSensores">+</button>
+                <div class="sensores__boton blanco-a" @click="agregarSensores">+</div>
             </section>
             <input type="submit" class="boton-crear boton-modulo blanco-a txt-upper" value="Guardar">
         </form>
@@ -46,6 +46,7 @@ import modulosServicio from '../../services/modulosServicio.js';
                 mac: '',
                 mina: '',
                 area: '',
+                sensores: [],
                 ocultar: true,
                 numSensores: 0,
                 maxSensores: 8,
@@ -59,17 +60,22 @@ import modulosServicio from '../../services/modulosServicio.js';
         methods: {
             agregarSensores(){
                 if(this.numSensores >= this.maxSensores) return;
-                this.numSensores++;
+                const sensor = {
+                    clave: `${this.mac}-${++this.numSensores}`
+                };
+                this.sensores.push(sensor);
             },
             eliminarSensores(){
                 this.numSensores--;
+                this.sensores.pop();
             },
             async crearModulo() {
                 try{
                     const modulo = {
                         mac: this.mac,
                         mina: this.mina,
-                        area: this.area
+                        area: this.area,
+                        sensores: this.sensores || []
                     }
                     const res = await modulosServicio.create(modulo);
                     const data = await res.data;

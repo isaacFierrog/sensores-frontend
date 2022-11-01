@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h1>Listado de usuarios</h1>
+        <h1>Usuarios</h1>
         <button class="boton-crear blanco-a" @click="mostrarFormulario">
             <i class="fa-solid fa-plus"></i>
             Crear usuario
@@ -8,6 +8,7 @@
         <Usuario
             v-for="usuario in usuarios"
             :usuario="usuario" 
+            :key="usuario"
             @editarUsuario="editarUsuario">
         </Usuario>
         <UsuarioForm 

@@ -8,5 +8,8 @@ export default {
     },
     create(data){
         return Servicio.post(recurso, data);
+    }, 
+    retrieve(id) {
+        return Servicio.get(`${recurso}${id}/`)
     }
 }

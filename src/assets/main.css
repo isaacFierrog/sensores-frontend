@@ -4,7 +4,7 @@
   --color-headers: #fffffe;
   --color-text: #5f6c7b;
   --color-secundario: rgb(19, 18, 24);
-  --color-submit: rgb(70, 55, 121);
+  --color-submit: #7f5af0;
   --color-submit-resaltado: rgb(99, 77, 170);
 }
 
@@ -37,7 +37,7 @@ a{
   margin: 0 auto;
 }
 .titulo{
-  margin-bottom: 2rem;
+  margin-bottom: .5rem;
 }
 .boton-cerrar{
   position: absolute;
@@ -62,7 +62,7 @@ a{
 .boton-crear{
   padding: 1rem 1.5rem;
   border: none;
-  border-radius: 1.2rem;
+  border-radius: .5rem;
   background-color: var(--color-submit);
   transition: all .3s ease-in-out;
 }

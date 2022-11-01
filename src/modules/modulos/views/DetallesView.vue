@@ -10,28 +10,20 @@
                         class="sensor"
                         :class="estadoSensor(sensor.datos)"
                         :key="sensor">
-                        <p>{{ sensor.clave }}: {{ ultimoValor(sensor.datos) }}</p>
+                        <p class="sensor__clave">{{ sensor.clave }}</p>
+                        <hr>
+                        <p>Ultimo valor: {{ ultimoValor(sensor.datos) }}</p>
                 </article>
             </section>
-
-            <!-- <ul>
-                <li v-for="sensor in modulo.sensores"
-                    :key="sensor">
-                    <p>Clave: {{ sensor.clave }}</p>
-                    <ul>
-                        <li v-for="dato in sensor.datos"
-                            :key="dato">
-                            <p>----Estado: {{ dato.estado }}</p>
-                            <p>----Valor: {{ dato.valor }}</p>
-                        </li>
-                    </ul>
-                </li>
-            </ul> -->
         </article>
+        <Grafica></Grafica>
     </div>
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue'; 
+import modulosServicio from '../../services/modulosServicio.js';
+
 export default {
     created(){
         this.obtenerDatosModulo();
@@ -40,15 +32,18 @@ export default {
         }, this.tiempoPeticion);
     },
     beforeUnmount(){
-        console.log('ADIOS CRACK');
         this.detenerPeticion();
     },
+    components: {
+        Grafica: defineAsyncComponent(
+            () => import('../components/GraficaComponent.vue')
+        )
+    }, 
     data(){
         return {
             modulo: null,
             referenciaPeticion: null,
             tiempoPeticion: 5000,
-            modulo: null
         }
     },
     methods: {
@@ -59,18 +54,17 @@ export default {
         async obtenerDatosModulo() {
             try{
                 const { id } = this.$route.params;
-                const url = `http://127.0.0.1:8000/api/modulos/${id}/`;
-                const res = await fetch(url);
-                const data = await res.json();
+                const res = await modulosServicio.retrieve(id);
+                const data = await res.data;
                 const { status, statusText } = res;
 
-                if(!res.ok) throw { status, statusText };
+                if(status < 200 || status > 299) throw { status, statusText };
 
                 this.modulo = data;
                 console.log(this.modulo);
             }catch({ status, statusText }){
                 const mensaje = statusText || 'Ocurrio un error';
-                console.log(`Error ${status}: ${mensaje}`);
+                console.log({ mensaje, status });
             }
         }
     },
@@ -92,14 +86,18 @@ export default {
         display: flex;
         flex-wrap: nowrap;
         gap: 1rem;
+        padding-top: 2rem;
     }
     .sensor{
         flex-basis: calc((100% / 4) - 1rem);
-        display: flex;
         padding: 2rem;
-        background-color: antiquewhite;
+        background-color: #242629;
+        color: #fffffe;
         border: none;
         border-radius: 1rem;
+    }
+    .sensor__clave{
+        font-weight: bold;
     }
     .sensor--activo{
         border-right: 4rem solid rgb(68, 175, 68);

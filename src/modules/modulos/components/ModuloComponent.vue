@@ -32,10 +32,10 @@ export default {
         margin: 0 .3rem;
         margin-bottom: .8rem;
         padding: 2rem 2rem;
-        background-color: #72757e;
+        background-color: #242629;
         border: none;
-        border-top: 3rem solid #094067;
-        border-radius: 1.5rem;
+        border-top: 3rem solid #2cb67d;
+        border-radius: .6rem;
         transition: all .3s ease-in-out;
     }
     .modulo:hover{
