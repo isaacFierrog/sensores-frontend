@@ -25,9 +25,7 @@
 </template>
 
 <script>
-import { list } from 'postcss';
-import VueJwtDecode from 'vue-jwt-decode'
-
+import { mapActions } from 'vuex';
 const ls = localStorage;
 
 export default {
@@ -47,32 +45,25 @@ export default {
             this.correo = '';
             this.password = '';
         },
-        async autenticarUsuario() {
-            const url = 'http://127.0.0.1:8000/api/login/';
-
-            try{
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-type': 'application/json; charset=utf-8',
-                    },
-                    body: JSON.stringify({
-                        correo: this.correo,
-                        password: this.password
-                    })
-                });
-                const data = await res.json();
-                const { status, statusText } = res;
-                
-                if(!res.ok) throw { status, statusText };
-                
-                this.guardarTokens(data);
-                this.reiniciarCampos();
-            }catch({ status, statusText }){
-                const mensaje = statusText || 'Ocurrio un error';
-                console.log(`Error ${status}: ${mensaje}`);
+        autenticarUsuario() {
+            if(this.correo.length === 0) {
+                console.log('Debe de ingresar un correo para ingresar');
+                return;
             }
-        }
+            if(this.password.length === 0){
+                console.log('Debe de ingresar un password para ingresar');
+                return;
+            }
+            
+            this.autenticar({
+                correo: this.correo,
+                password: this.password
+            });
+            this.reiniciarCampos();
+        },
+        ...mapActions({
+            autenticar: 'autenticarUsuario'
+        })
     }
 }
 </script>
