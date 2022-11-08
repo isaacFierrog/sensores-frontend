@@ -1,16 +1,17 @@
 <template>
   <div class="container">
     <Loader v-if="procesando"></Loader>
-    <Header v-if="autenticado"></Header>
-    <h1 v-if="autenticado">{{ usuario.nombre }}</h1>
-    <RouterView />
+    <Header v-if="estaAutenticado"></Header>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import { RouterView } from 'vue-router'
 import { defineAsyncComponent } from 'vue'
-import { mapState } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
+
+const convertirAMilisegundos = minutos => minutos * 60 * 1000; 
+const minutos = 0.2;
 
 export default {
   components: {
@@ -21,14 +22,32 @@ export default {
       () => import('./modules/shared/components/LoaderComponent.vue')
     )
   },
+  created(){
+    if(this.estaAutenticado){
+      console.log('Ya estamos autenticados')
+      this.refrescarToken();
+    }
+  },
   data() {
     return {}
   },
+  methods: {
+    refrescarToken() {
+      this.$store.commit('guardarReferenciaToken', setInterval(() => {
+        this.refreshToken();
+      }, convertirAMilisegundos(minutos)))
+    },
+    ...mapActions({
+      refreshToken: 'refrescarToken'
+    })
+  },
   computed: {
     ...mapState([
-      'autenticado',
-      'procesando',
-      'usuario'
+      'refRefrescarToken',
+      'procesando'
+    ]),
+    ...mapGetters([
+      'estaAutenticado'
     ])
   }
 }

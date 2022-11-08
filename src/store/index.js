@@ -4,36 +4,34 @@ import refreshServicio from '../modules/services/refreshServicio';
 
 
 const ls = localStorage;
-const guardarToken = ({ token, refresh }) => {
-    ls.setItem('token', token);
+const guardarTokenLocal = ({ access, refresh }) => {
+    ls.setItem('access', access);
     ls.setItem('refresh', refresh);
-}
-const obtenerRefreshToken = () => {
-    return ls.getItem('refresh');
-}
+};
+const obtenerRefreshToken = () => ls.getItem('refresh');
+const actualizarToken = ({ access }) => ls.setItem('access', access)
 
 export default createStore({
     state: {
         autenticado: false,
         procesando: false,
-        usuario: null, 
         refRefrescarToken: null,
         tiempoRefresh: 10000
     },
     mutations: {
-        guardarToken(state, { token, refresh, usuario }) {
-            state.usuario = usuario;
-            guardarToken({ token, refresh });
+        guardarToken(state, { access, refresh }) {
+            console.log('HOLA DESDE GUARDAR TOKEN');
+            console.log({ access, refresh });
+            guardarTokenLocal({ access, refresh });
         },
-        autenticar(state){
-            state.autenticado = true;
-
+        guardarReferenciaToken(state, ref) {
+            state.refRefrescarToken = ref;
         },
         validarProcesado(state, estado){
             state.procesando = estado;
         },
-        validarAutenticacion(state){
-
+        validarAutenticacion(state, estado){
+            state.autenticado = estado;
         }
     },
     actions: {
@@ -47,6 +45,7 @@ export default createStore({
                 if(status < 200 || status > 299) throw { status, statusText };
 
                 console.log(data);
+                actualizarToken(data);
             }catch({ status, statusText }){
                 console.log('Desde la excepcion')
                 console.log(status, statusText);
@@ -59,22 +58,22 @@ export default createStore({
                 const data = await res.data;
                 const { status, statusText } = res;
     
-                if(status < 200 || status > 299) throw { status, statusText };
-        
+                if(status < 200 && status > 299) throw { status, statusText };
+                
                 context.commit('guardarToken', data);
-                context.commit('autenticar');
                 context.commit('validarProcesado', false);
-                context.state.refRefrescarToken = setInterval(() => {
-                    context.dispatch('refrescarToken');
-                }, context.state.tiempoRefresh);
+                context.commit('validarAutenticacion', true);
             }catch({ status, statusText }){
-                console.log('Desde la excepcion')
-                console.log(status, statusText);
+                context.commit('validarProcesado', false);
+                context.commit('validarAutenticacion', false);
             }
 
         }
     },
     getters: {
-
+        estaAutenticado(state) {
+            state.autenticado = (ls.getItem('refresh')) ? true : false;
+            return state.autenticado;
+        }
     }
 });

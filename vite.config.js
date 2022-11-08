@@ -12,7 +12,7 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: '../backend/dist',
+    outDir: '../backend/templates',
     assetsDir: './static'
   }
 })

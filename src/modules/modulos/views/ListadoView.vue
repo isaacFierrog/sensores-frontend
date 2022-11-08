@@ -24,7 +24,6 @@
 <script>
 import { defineAsyncComponent } from 'vue';
 import modulosServicio from '../../services/modulosServicio.js';
-import { Bar } from 'vue-chartjs'
 
 export default {
     components: {
@@ -69,7 +68,6 @@ export default {
             }
         },
         refrescarModulos() {
-            console.log('REFRESCANDO MODULOS')
             this.obtenerModulos();
         },
         mostrarFormulario() {

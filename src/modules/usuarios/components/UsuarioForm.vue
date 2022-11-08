@@ -74,7 +74,7 @@ export default {
                     area: this.area
                 };
 
-                const res = await usuariosServicio.create(usuario);
+                const res = await usuariosServicio.post(usuario);
                 const data = await res.data;
                 const { status, statusText } = res;
 

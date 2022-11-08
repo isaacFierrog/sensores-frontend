@@ -1,13 +1,24 @@
 <template>
-    <div class="container">
+    <div class="container" v-if="estaAutenticado">
         <router-view></router-view>
     </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
-    data() {
-        return {}
+    beforeMount(){
+        console.log('Iniciando Modulos')
+        if(!this.estaAutenticado){
+            console.log('No esta autenticado');
+            this.$router.push({ name: 'login' });
+        }else{
+            console.log('Esta autenticado');
+        }
+
+    },
+    computed: {
+        ...mapGetters(['estaAutenticado'])
     }
 }
 </script>

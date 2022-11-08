@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 const ls = localStorage;
 
 export default {
@@ -37,7 +37,6 @@ export default {
     },
     methods: {
         guardarTokens({ access, refresh }){
-            console.log('Tokens almacenados');
             ls.setItem('access', access);
             ls.setItem('refresh', refresh);
         },
@@ -46,24 +45,35 @@ export default {
             this.password = '';
         },
         autenticarUsuario() {
-            if(this.correo.length === 0) {
-                console.log('Debe de ingresar un correo para ingresar');
+            if(this.campoCorreoVacio || this.campoPasswordVacio){
+                console.log('Debes de llenar todos los campos para ingresar');
                 return;
             }
-            if(this.password.length === 0){
-                console.log('Debe de ingresar un password para ingresar');
-                return;
-            }
-            
             this.autenticar({
                 correo: this.correo,
                 password: this.password
             });
             this.reiniciarCampos();
+            this.redireccionar();
+        },
+        redireccionar(){
+            if(this.estaAutenticado){
+                console.log('Hola');
+                this.$router.push({ name: 'usuarios-listar' });
+            }
         },
         ...mapActions({
             autenticar: 'autenticarUsuario'
         })
+    },
+    computed: {
+        campoCorreoVacio() {
+            return this.correo.length === 0;
+        },
+        campoPasswordVacio() {
+            return this.password.length === 0;
+        },
+        ...mapGetters(['estaAutenticado'])
     }
 }
 </script>
