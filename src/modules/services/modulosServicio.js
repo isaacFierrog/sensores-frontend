@@ -10,12 +10,28 @@ const config = {
 
 export default {
     get() {
-        return Servicio.get(recurso, config);
+        return Servicio.get(recurso, {
+            headers: {
+                'Authorization': `Bearer ${ls.getItem('access')}`,
+                'Content-type': 'application/json; charset=utf-8'
+            }
+        });
     },
     create(data){
-        return Servicio.post(recurso, data, config);
+        console.log
+        return Servicio.post(recurso, data, {
+            headers: {
+                'Authorization': `Bearer ${ls.getItem('access')}`,
+                'Content-type': 'application/json; charset=utf-8'
+            }
+        });
     }, 
     retrieve(id) {
-        return Servicio.get(`${recurso}${id}/`, config)
+        return Servicio.get(`${recurso}${id}/`, {
+            headers: {
+                'Authorization': `Bearer ${ls.getItem('access')}`,
+                'Content-type': 'application/json; charset=utf-8'
+            }
+        })
     }
 }

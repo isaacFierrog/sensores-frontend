@@ -6,35 +6,40 @@
             <p class="blanco-a form__label">Mac</p>
             <input type="text" class="form__input" v-model="mac">
             <p class="blanco-a form__label">Mina</p>
-            <select class="form__input" v-model="mina">
+            <input type="text" list="minas" class="form__input" v-model="mina">
+            <datalist class="form__input" id="minas">
                 <option
                     v-for="m in minas"
                     :key="m"
                     :value="m">
                     {{ m }}
                 </option>
-            </select>
+            </datalist>
             <p class="blanco-a form__label">Area</p>
-            <select class="form__input" v-model="area">
+            <input type="text" list="areas" class="form__input" v-model="area">
+            <datalist class="form__input" id="areas">
                 <option 
                     v-for="a in areas"
                     :key="a"
                     :value="a">
                     {{ a }}
                 </option>
-            </select>
+            </datalist>
             <section class="sensores">
                 <div class="sensores__boton blanco-a" @click="eliminarSensores">-</div>
                 <p>Sensores: {{ numSensores }}</p>
                 <div class="sensores__boton blanco-a" @click="agregarSensores">+</div>
             </section>
             <input type="submit" class="boton-crear boton-modulo blanco-a txt-upper" value="Guardar">
+            <p v-if="mensajeError" class="mensaje mensaje--error mensaje--ocultar">Debes de llenar todos los campos</p>
+            <p v-if="mensajeExito" class="mensaje mensaje--exito mensaje--ocultar">Modulo creado exitosamente</p>
         </form>
     </div>
 </template>
 
 <script>
-import modulosServicio from '../../services/modulosServicio.js';
+    import modulosServicio from '../../services/modulosServicio.js';
+
     export default {
         props: {
             mostrarForm: {
@@ -54,7 +59,9 @@ import modulosServicio from '../../services/modulosServicio.js';
                     'HERMOSILLO', 
                     'CANANEA'
                 ],
-                areas: ['A', 'B', 'C', 'D']
+                areas: ['A', 'B', 'C', 'D'],
+                mensajeExito: false,
+                mensajeError: false
             }
         },
         methods: {
@@ -68,6 +75,9 @@ import modulosServicio from '../../services/modulosServicio.js';
             eliminarSensores(){
                 this.numSensores--;
                 this.sensores.pop();
+            },
+            mostrarMensajeExito() {
+                this.mensajeExito = true;
             },
             async crearModulo() {
                 try{
@@ -85,6 +95,7 @@ import modulosServicio from '../../services/modulosServicio.js';
                     
                     this.reiniciarCampos();
                     this.refrescarModulos();
+                    this.mostrarMensajeExito();
                 }catch({ status, statusText }){
                     const mensaje = statusText || 'Ocurrio un error';
                     console.log(`Error ${status}: ${mensaje}`);
@@ -112,6 +123,21 @@ import modulosServicio from '../../services/modulosServicio.js';
     </script>
 
 <style scoped> 
+    .mensaje{
+        margin-top: 2rem;
+        text-align: center;
+        transition: all .2s ease-in-out;
+    }
+    .mensaje--ocultar{
+        opacity: 0;
+        visibility: hidden;
+    }
+    .mensaje--error{
+        color: rgb(211, 53, 53);
+    }
+    .mensaje--exito{
+        color: rgb(105, 211, 84);
+    }
     .layout-modulo-form{
         position: fixed;
         top: 0;

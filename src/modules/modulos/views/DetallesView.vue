@@ -1,11 +1,11 @@
 <template>
     <div>
         <h1>Detalles del modulo</h1>
-        <article>
+        <article v-if="moduloCargado">
             <h3>Modulo: {{ modulo.mac }}</h3>
             <p>Zona: {{ modulo.area }}</p>
             <p>Mina: {{ modulo.mina }}</p>
-            <section class="sensores" v-if="modulo">
+            <section class="sensores" v-if="sensoresCargados">
                 <article v-for="sensor in modulo.sensores"
                         class="sensor"
                         :class="estadoSensor(sensor.datos)"
@@ -16,7 +16,6 @@
                 </article>
             </section>
         </article>
-        <Grafica></Grafica>
     </div>
 </template>
 
@@ -34,11 +33,6 @@ export default {
     beforeUnmount(){
         this.detenerPeticion();
     },
-    components: {
-        Grafica: defineAsyncComponent(
-            () => import('../components/GraficaComponent.vue')
-        )
-    }, 
     data(){
         return {
             modulo: null,
@@ -57,11 +51,13 @@ export default {
                 const res = await modulosServicio.retrieve(id);
                 const data = await res.data;
                 const { status, statusText } = res;
+                
+                console.log('DATA');
+                console.log(data);
 
                 if(status < 200 || status > 299) throw { status, statusText };
 
                 this.modulo = data;
-                console.log(this.modulo);
             }catch({ status, statusText }){
                 const mensaje = statusText || 'Ocurrio un error';
                 console.log({ mensaje, status });
@@ -69,13 +65,28 @@ export default {
         }
     },
     computed: {
+        moduloCargado() {
+            return this.modulo != null;
+        },
+        sensoresCargados() {
+            return this.modulo.sensores.length > 0;
+        },
+        sensores() {
+            return this.modulo.sensores;
+        },
         ultimoValor(){
-            return datos => datos.pop().valor
+            return datos => {
+                if(datos.length === 0) return 'N/E';
+                return datos.pop().valor;
+            }
         },
         estadoSensor(){
-            return datos => datos.pop().estado
-                                    ? 'sensor--activo'
-                                    : 'sensor--inactivo'
+            return datos => {
+                if(datos.length === 0) return 'S/E'; 
+                return datos.pop().estado
+                    ? 'sensor--activo'
+                    : 'sensor--inactivo'
+            }
         }
     }
 }
