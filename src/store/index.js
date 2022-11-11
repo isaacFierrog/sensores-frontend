@@ -64,6 +64,7 @@ export default createStore({
                 context.commit('validarProcesado', false);
                 context.commit('validarAutenticacion', true);
             }catch({ status, statusText }){
+                alert('Las credenciales introducidas son incorrectas');
                 context.commit('validarProcesado', false);
                 context.commit('validarAutenticacion', false);
             }

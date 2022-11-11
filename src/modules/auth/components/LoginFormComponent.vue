@@ -46,7 +46,7 @@ export default {
         },
         autenticarUsuario() {
             if(this.campoCorreoVacio || this.campoPasswordVacio){
-                console.log('Debes de llenar todos los campos para ingresar');
+                alert('Debes de llenar todos los campos para ingresar');
                 return;
             }
             this.autenticar({

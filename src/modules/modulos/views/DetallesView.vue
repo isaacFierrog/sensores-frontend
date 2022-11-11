@@ -94,7 +94,7 @@ export default {
 <style scoped>
     .sensores{
         display: flex;
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
         gap: 1rem;
         padding-top: 2rem;
     }
