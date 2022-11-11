@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1>Detalles del modulo</h1>
-        <article v-if="moduloCargado">
+        <article v-if="modulo">
             <h3>Modulo: {{ modulo.mac }}</h3>
             <p>Zona: {{ modulo.area }}</p>
             <p>Mina: {{ modulo.mina }}</p>
@@ -51,12 +51,11 @@ export default {
                 const res = await modulosServicio.retrieve(id);
                 const data = await res.data;
                 const { status, statusText } = res;
+
+                if(status < 200 || status > 299) throw { status, statusText };
                 
                 console.log('DATA');
                 console.log(data);
-
-                if(status < 200 || status > 299) throw { status, statusText };
-
                 this.modulo = data;
             }catch({ status, statusText }){
                 const mensaje = statusText || 'Ocurrio un error';
@@ -77,13 +76,13 @@ export default {
         ultimoValor(){
             return datos => {
                 if(datos.length === 0) return 'N/E';
-                return datos.pop().valor;
+                return datos[0].valor;
             }
         },
         estadoSensor(){
             return datos => {
-                if(datos.length === 0) return 'S/E'; 
-                return datos.pop().estado
+                if(datos.length === 0) return 'sensor--sinestado'; 
+                return datos[0].estado
                     ? 'sensor--activo'
                     : 'sensor--inactivo'
             }
@@ -115,5 +114,8 @@ export default {
     }
     .sensor--inactivo{
         border-right: 4rem solid rgb(190, 78, 78);
+    }
+    .sensor--sinestado{
+        border-right: 4rem solid rgb(158, 158, 158);
     }
 </style>
