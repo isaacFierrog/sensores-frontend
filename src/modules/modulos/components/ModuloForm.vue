@@ -1,6 +1,10 @@
 <template>
-    <div class="layout-modulo-form" :class="ocultarForm">
-        <button class="txt-upper blanco-a titulo-modulo boton-cerrar" @click="ocultarFormulario">x</button>
+    <div class="layout-modulo-form" :class="mostrarFormulario">
+        <button 
+            class="txt-upper blanco-a titulo-modulo boton-cerrar" 
+            @click="ocultarFormulario">
+            x
+        </button>
         <h2 class="txt-upper blanco-a titulo-modulo">Crear modulo</h2>
         <form class="form" @submit.prevent="crearModulo">
             <p class="blanco-a form__label">Mac</p>
@@ -26,101 +30,85 @@
                 </option>
             </datalist>
             <section class="sensores">
-                <div class="sensores__boton blanco-a" @click="eliminarSensores">-</div>
-                <p>Sensores: {{ numSensores }}</p>
-                <div class="sensores__boton blanco-a" @click="agregarSensores">+</div>
+                <div 
+                    class="sensores__boton blanco-a" 
+                    @click="eliminarSensores"
+                    >
+                    -
+                </div>
+                <p>Sensores: {{ numeroSensores }}</p>
+                <div 
+                    class="sensores__boton blanco-a" 
+                    @click="agregarSensores">
+                    +
+                </div>
             </section>
             <input type="submit" class="boton-crear boton-modulo blanco-a txt-upper" value="Guardar">
-            <p v-if="mensajeError" class="mensaje mensaje--error mensaje--ocultar">Debes de llenar todos los campos</p>
-            <p v-if="mensajeExito" class="mensaje mensaje--exito mensaje--ocultar">Modulo creado exitosamente</p>
+            <p 
+                class="mensaje mensaje--error"
+                v-if="mensajeSensores">
+                Debes de agregar una MAC antes de agregar sensores
+            </p>
+            <p v-if="mensajeCampos" class="mensaje mensaje--error">Debes de llenar todos los campos antes de guardar</p>
+            <p v-if="mensajeError" class="mensaje mensaje--error">Debes de llenar todos los campos</p>
+            <p v-if="mensajeExito" class="mensaje mensaje--exito">Modulo creado exitosamente</p>
         </form>
     </div>
 </template>
 
 <script>
-    import modulosServicio from '../../services/modulosServicio.js';
+import useModuloForm from '../../composables/modulos/useModuloForm'
 
-    export default {
-        props: {
-            mostrarForm: {
-                type: Boolean
-            }
-        },
-        data() {
-            return {
-                mac: '',
-                mina: '',
-                area: '',
-                sensores: [],
-                ocultar: true,
-                numSensores: 0,
-                maxSensores: 8,
-                minas: [
-                    'HERMOSILLO', 
-                    'CANANEA'
-                ],
-                areas: ['A', 'B', 'C', 'D'],
-                mensajeExito: false,
-                mensajeError: false
-            }
-        },
-        methods: {
-            agregarSensores(){
-                if(this.numSensores >= this.maxSensores) return;
-                const sensor = {
-                    clave: `${this.mac}-${++this.numSensores}`
-                };
-                this.sensores.push(sensor);
-            },
-            eliminarSensores(){
-                this.numSensores--;
-                this.sensores.pop();
-            },
-            mostrarMensajeExito() {
-                this.mensajeExito = true;
-            },
-            async crearModulo() {
-                try{
-                    const modulo = {
-                        mac: this.mac,
-                        mina: this.mina,
-                        area: this.area,
-                        sensores: this.sensores || []
-                    }
-                    const res = await modulosServicio.create(modulo);
-                    const data = await res.data;
-                    const { status, statusText } = res;
-    
-                    if(status < 200 || status > 299) throw { status, statusText };
-                    
-                    this.reiniciarCampos();
-                    this.refrescarModulos();
-                    this.mostrarMensajeExito();
-                }catch({ status, statusText }){
-                    const mensaje = statusText || 'Ocurrio un error';
-                    console.log(`Error ${status}: ${mensaje}`);
-                }
-            },  
-            ocultarFormulario() {
-                this.$emit('ocultarFormulario');
-            },
-            refrescarModulos() {
-                this.$emit('refrescarModulos')
-            },
-            reiniciarCampos() {
-                this.mac = '';
-                this.mina = '';
-                this.area = '';
-                this.numSensores = 0;
-            }
-        },
-        computed: {
-            ocultarForm() {
-                return { 'ocultar-layout': this.mostrarForm }
-            }
+export default {
+    props: {
+        verFormulario: {
+            type: Boolean,
+            default: false
+        }
+    },  
+    setup(props, context) {
+        const {
+            verFormulario,
+            mac,
+            mina, 
+            area,
+            sensores,
+            numeroSensores,
+            mensajeSensores,
+            mensajeExito,
+            mensajeError,
+            mensajeCampos,
+            minas,
+            areas,
+            mostrarFormulario,
+            crearModulo,
+            ocultarFormulario,
+            agregarSensores,
+            eliminarSensores
+        } = useModuloForm(props, context);
+
+        return {
+            verFormulario,
+            mac,
+            mina, 
+            area,
+            sensores,
+            numeroSensores,
+            mensajeSensores,
+            mensajeExito,
+            mensajeError,
+            mensajeCampos,
+            minas,
+            areas,
+            mostrarFormulario,
+            crearModulo,
+            ocultarFormulario,
+            agregarSensores,
+            eliminarSensores
         }
     }
-    </script>
+}
+</script>
 
 <style scoped> 
     .mensaje{

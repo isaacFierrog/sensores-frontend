@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import useAuthStore from '@/store/useAuthStore'
+import { storeToRefs } from 'pinia'
 
 
 const router = createRouter({
@@ -53,7 +55,16 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  next();
+  const store = useAuthStore();
+  const { autenticado } = storeToRefs(store);
+
+  if(to.name !== 'login' && !autenticado.value){
+    next({ name: 'login' })
+  }else if(to.name === 'login' && autenticado.value){
+    next({ name: 'modulos-listar' })
+  }else{
+    next();
+  }
 })
 
 export default router

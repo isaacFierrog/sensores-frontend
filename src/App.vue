@@ -1,54 +1,39 @@
 <template>
   <div class="container">
-    <Loader v-if="procesando"></Loader>
-    <Header v-if="estaAutenticado"></Header>
+    <!-- <Loader v-if="procesando"></Loader> -->
+    <Header v-if="autenticado"></Header>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
 import { defineAsyncComponent } from 'vue'
-import { mapState, mapGetters, mapActions } from 'vuex'
-
-const convertirAMilisegundos = minutos => minutos * 60 * 1000; 
-const minutos = 0.2;
+import { storeToRefs } from 'pinia' 
+import useAuthStore from './store/useAuthStore'
 
 export default {
   components: {
     Header: defineAsyncComponent(
       () => import('./modules/shared/components/HeaderComponent.vue')
-    ),
-    Loader: defineAsyncComponent(
-      () => import('./modules/shared/components/LoaderComponent.vue')
     )
-  },
-  created(){
-    if(this.estaAutenticado){
-      console.log('Ya estamos autenticados')
-      this.refrescarToken();
+  },  
+  setup() {
+    console.log('PUNTO DE ACCESO');
+    const TIEMPO_REFRESH = 420000;
+    const store = useAuthStore();
+    const { autenticado, referenciaRefresh } = storeToRefs(store);
+    const { verificarAutenticacion, actualizarToken } = store;
+
+    verificarAutenticacion();
+    
+    if(autenticado.value && !referenciaRefresh.value){
+      referenciaRefresh.value = setInterval(() => {
+        actualizarToken();
+        console.log('Se autentica el token');
+      }, TIEMPO_REFRESH);
     }
-  },
-  data() {
-    return {}
-  },
-  methods: {
-    refrescarToken() {
-      this.$store.commit('guardarReferenciaToken', setInterval(() => {
-        this.refreshToken();
-      }, convertirAMilisegundos(minutos)))
-    },
-    ...mapActions({
-      refreshToken: 'refrescarToken'
-    })
-  },
-  computed: {
-    ...mapState([
-      'refRefrescarToken',
-      'procesando'
-    ]),
-    ...mapGetters([
-      'estaAutenticado'
-    ])
+
+    return { autenticado };
   }
 }
 </script>

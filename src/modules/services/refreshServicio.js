@@ -11,6 +11,6 @@ const config = {
 
 export default {
     post(data){
-        return Servicio.post(recurso, data, config);
+        return Servicio.post(recurso, data);
     }
 }

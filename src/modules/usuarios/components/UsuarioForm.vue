@@ -4,17 +4,17 @@
         <h2 class="txt-upper blanco-a titulo-usuario">Crear usuario</h2>
         <form class="form" @submit.prevent="crearUsuario">
             <p class="blanco-a form__label">Correo</p>
-            <input type="email" class="form__input" v-model="correo">
+            <input type="email" class="form__input" v-model="usuario.correo">
             <p class="blanco-a form__label">Nombre</p>
-            <input type="text" class="form__input" v-model="nombre">
+            <input type="text" class="form__input" v-model="usuario.nombre">
             <p class="blanco-a form__label">Apellido</p>
-            <input type="text" class="form__input" v-model="apellido">
+            <input type="text" class="form__input" v-model="usuario.apellido">
             <p class="blanco-a form__label">Contraseña</p>
-            <input type="password" class="form__input" v-model="password">
+            <input type="password" class="form__input" v-model="usuario.password">
             <p class="blanco-a form__label">Verifica password</p>
             <input type="password" class="form__input" v-model="password2">
             <p class="blanco-a form__label">Mina</p>
-            <select class="form__input" v-model="mina">
+            <select class="form__input" v-model="usuario.mina">
                 <option
                     v-for="m in minas"
                     :key="m"
@@ -37,88 +37,140 @@
 </template>
 
 <script>
-import usuariosServicio from '../../services/usuariosServicio.js';
+import { ref, computed } from 'vue'
+import usuariosService from '@/services/usuariosService'
+
 export default {
-    props: {
-        mostrarForm: {
-            type: Boolean
-        },
-        usuario: {
-            type: Object,
-            required: false
-        }
-    },
-    data() {
-        return {
+    setup(props, { emit }) {
+        const usuario = ref({
             correo: '',
             nombre: '',
             apellido: '',
             password: '',
-            password2: '',
             mina: '',
-            area: '',
-            ocultar: true,
-            minas: ['HERMOSILLO', 'CANANEA'],
-            areas: ['A', 'B', 'C', 'D']
+            area: ''
+        });
+        const password2 = ref('');
+
+        //Metodos
+        const reiniciarCampos = () => {
+            usuario.value.correo = '';
+            usuario.value.nombre = '';
+            usuario.value.apellido = '';
+            usuario.value.password = '';
+            usuario.value.mina = '';
+            usuario.value.area = '';
         }
-    },
-    methods: {
-        async crearUsuario() {
+        const actualizarUsuarios = () => emit('actualizarUsuarios');
+        const ocultarFormulario = () => emit('ocultarFormulario');
+        const crearUsuario = async() => {
             try{
-                const usuario = {
-                    correo: this.correo,
-                    nombre: this.nombre,
-                    apellido: this.apellido,
-                    password: this.password,
-                    mina: this.mina,
-                    area: this.area
-                };
+                const res = await usuariosService.create(usuario.value);
+                const { data } = await res.data;
 
-                const res = await usuariosServicio.post(usuario);
-                const data = await res.data;
-                const { status, statusText } = res;
-
-                if(status < 200 || status > 299) throw { status, statusText };
-
-                this.reiniciarCampos();
-                this.actualizarUsuarios();
-            }catch({ status, statusText }){
-                const mensaje = statusText || 'Ocurrio un error';
-                console.log({ mensaje, status })
+                console.log(data);
+                reiniciarCampos();
+                actualizarUsuarios();
+            }catch(err){
+                console.log(err)
             }
-        },  
-        ocultarFormulario() {
-            this.$emit('ocultarFormulario');
-        },
-        actualizarUsuarios() {
-            this.$emit('actualizarUsuarios');
-        },
-        reiniciarCampos() {
-            this.correo = '';
-            this.nombre = '';
-            this.apellido = '';
-            this.password = '';
-            this.password2 = '';
-            this.mina = '';
-            this.area = '';
         }
-    },
-    computed: {
-        ocultarForm() {
-            return { 'ocultar-layout': this.mostrarForm }
-        }
-    },
-    watch: {
-        usuario(newUsuario, oldUsuario){
-            const { correo, nombre, apellido, mina, area } = newUsuario;
-            this.correo = correo;
-            this.nombre = nombre;
-            this.apellido = apellido;
-            this.mina = mina;
-            this.area = area;
+
+        //Propiedades computadas
+        const ocultarForm = computed(() => ({
+            'ocultar-layout': this.mostrarForm
+        }));
+
+        return {
+            usuario,
+            password2,
+            ocultarForm,
+            crearUsuario,
+            ocultarFormulario
         }
     }
 }
+// export default {
+//     props: {
+//         mostrarForm: {
+//             type: Boolean
+//         },
+//         usuario: {
+//             type: Object,
+//             required: false
+//         }
+//     },
+//     data() {
+//         return {
+//             correo: '',
+//             nombre: '',
+//             apellido: '',
+//             password: '',
+//             password2: '',
+//             mina: '',
+//             area: '',
+//             ocultar: true,
+//             minas: ['HERMOSILLO', 'CANANEA'],
+//             areas: ['A', 'B', 'C', 'D']
+//         }
+//     },
+//     methods: {
+//         async crearUsuario() {
+//             try{
+//                 const usuario = {
+//                     correo: this.correo,
+//                     nombre: this.nombre,
+//                     apellido: this.apellido,
+//                     password: this.password,
+//                     mina: this.mina,
+//                     area: this.area
+//                 };
+
+//                 const res = await usuariosServicio.post(usuario);
+//                 const data = await res.data;
+//                 const { status, statusText } = res;
+
+//                 if(status < 200 || status > 299) throw { status, statusText };
+
+//                 this.reiniciarCampos();
+//                 this.actualizarUsuarios();
+//             }catch({ status, statusText }){
+//                 const mensaje = statusText || 'Ocurrio un error';
+//                 console.log({ mensaje, status })
+//             }
+//         },  
+//         ocultarFormulario() {
+//             this.$emit('ocultarFormulario');
+//         },
+//         actualizarUsuarios() {
+//             this.$emit('actualizarUsuarios');
+//         },
+//         reiniciarCampos() {
+//             this.correo = '';
+//             this.nombre = '';
+//             this.apellido = '';
+//             this.password = '';
+//             this.password2 = '';
+//             this.mina = '';
+//             this.area = '';
+//         }
+//     },
+//     computed: {
+//         ocultarForm() {
+//             return { 'ocultar-layout': this.mostrarForm }
+//         }
+//     },
+//     watch: {
+//         usuario(newUsuario, oldUsuario){
+//             const { correo, nombre, apellido, mina, area } = newUsuario;
+//             this.correo = correo;
+//             this.nombre = nombre;
+//             this.apellido = apellido;
+//             this.mina = mina;
+//             this.area = area;
+//         }
+//     }
+// }
 </script>
 
 <style scoped>

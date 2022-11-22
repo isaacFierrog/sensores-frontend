@@ -2,10 +2,10 @@
     <article class="usuario">
         <section>
             <h3 class="usuario__nombre blanco-a txt-upper">
-                {{ usuario.nombre }} {{ usuario.apellido }}
+                {{ nombre }} {{ apellido }}
             </h3>    
             <p class="blanco-b">
-                {{ usuario.correo }} | {{ usuario.mina }} | {{ usuario.area }}
+                {{ correo }} | {{ mina }} | {{ area }}
             </p>
         </section>
         <section class="acciones">
@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import { toRefs } from 'vue'
+
 export default {
     props: {
         usuario: {
@@ -23,10 +25,19 @@ export default {
             required: false
         }
     },
-    methods: {
-        editarUsuario(){
-            this.$emit('editarUsuario', this.usuario);
-        }
+    setup(props, { emit }) {
+        const { usuario } = toRefs(props);
+        const { nombre, apellido, correo, mina, area } = toRefs(usuario.value);
+        const editarUsuario = () => emit('editarUsuario', usuario.value);
+
+        return {
+            nombre,
+            apellido, 
+            correo, 
+            mina,
+            area,
+            editarUsuario
+        };
     }
 }
 </script>

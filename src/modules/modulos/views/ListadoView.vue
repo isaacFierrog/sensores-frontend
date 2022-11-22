@@ -1,77 +1,112 @@
 <template>
     <div>
         <h1 class="titulo">Modulos</h1>
-        <button class="boton-crear blanco-a" @click="mostrarFormulario">
+        <button 
+            class="boton-crear blanco-a" 
+            @click="mostrarFormulario">
             <i class="fa-solid fa-plus"></i>
             Crear modulo
         </button>
         <ModuloForm
-            :mostrarForm="mostrarForm"
+            :verFormulario="verFormulario"
             @ocultarFormulario="mostrarFormulario"
-            @refrescarModulos="refrescarModulos">
-        </ModuloForm>
+            @refrescarModulos="refrescarModulos"/>
         <section class="modulos" v-if="modulos">
             <Modulo 
                 v-for="modulo in modulos"
                 :key="modulo.id"
                 :modulo="modulo"
-                @click="verDetallesModulo(modulo.id)">
-            </Modulo>
+                @click="verDetallesModulo(modulo.id)"/>
+        </section>
+        <section class="botones">
+            <button 
+                :disabled="!paginaAnterior"
+                class="boton"
+                @click="regresarPagina">
+                Anterior
+            </button>
+            <button 
+                :disabled="!paginaSiguiente"
+                class="boton"
+                @click="cambiarPagina">
+                Siguiente
+            </button>
         </section>
     </div>
 </template>
 
 <script>
+import { ref } from 'vue'
 import { defineAsyncComponent } from 'vue';
-import modulosServicio from '../../services/modulosServicio.js';
+import { useRouter } from 'vue-router'
+import modulosService from '@/services/modulosService'
 
 export default {
     components: {
-        ModuloForm: defineAsyncComponent(
-            () => import('../components/ModuloForm.vue')
-        ),
         Modulo: defineAsyncComponent(
             () => import('../components/ModuloComponent.vue')
+        ),
+        ModuloForm: defineAsyncComponent(
+            () => import('../components/ModuloForm.vue')
         )
     },
-    created() {
-        this.obtenerModulos();
-    },
-    data() {
-        return {
-            modulos: [],
-            mostrarForm: true
-        }
-    },
-    methods: {
-        verDetallesModulo(idModulo){
-            console.log(`Este es el modulo: ${idModulo}`);
-            this.$router.push({
+    setup() {
+        const router = useRouter();
+
+        //Propiedades
+        const modulos = ref([]);
+        const verFormulario = ref(false);
+        const paginaAnterior = ref(null);
+        const paginaSiguiente = ref(null);
+        let numeroPagina = 1;
+
+        //Metodos
+        const mostrarFormulario = () => verFormulario.value = !verFormulario.value;
+        const obtenerModulos = async() => {
+            try{
+                const res = await modulosService.list(numeroPagina);
+                const data = await res.data;
+                const { results, next, previous } = data;
+                modulos.value = results;
+                paginaAnterior.value = !!previous;
+                paginaSiguiente.value = !!next;
+            }catch({ response }){
+                if(response.status === 401){
+                    console.log('refrescar token');
+                    console.log(response.status);
+                }
+            }
+        };
+        const refrescarModulos = () => obtenerModulos();
+        const verDetallesModulo = idModulo => {
+            router.push({
                 name: 'modulos-detalle',
                 params: {
                     id: idModulo
                 }
             })
-        },
-        async obtenerModulos() {
-            try{
-                const res = await modulosServicio.get();
-                const data = await res.data;
-                const { status, statusText } = res;
+        };
+        const cambiarPagina = () => {
+            numeroPagina++;
+            obtenerModulos();
+        };
+        const regresarPagina = () => {
+            numeroPagina--;
+            obtenerModulos();
+        }   
 
-                if(status < 200 || status > 299) throw { status, statusText };
+        obtenerModulos();
 
-                this.modulos = data;
-            }catch({ status, statusText }){
-                const mensaje = statusText || 'Ocurrio un error';
-                console.log({ mensaje, status });
-            }
-        },
-        refrescarModulos() {
-            this.obtenerModulos();
-        },
-        mostrarFormulario() {
-            this.mostrarForm = !this.mostrarForm;
+        return {
+            modulos,
+            verFormulario,
+            paginaAnterior,
+            paginaSiguiente,
+            mostrarFormulario,
+            refrescarModulos,
+            verDetallesModulo,
+            cambiarPagina,
+            regresarPagina
         }
     }
 }
@@ -82,5 +117,21 @@ export default {
         display: flex;
         flex-wrap: wrap;
         margin-top: 1rem;
+    }
+    .botones{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .boton{
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: .4rem;
+        color: white;
+        background-color: rgb(108, 59, 165);
+    }
+    .boton:hover{
+        cursor: pointer;
+        background-color: rgb(84, 47, 126);
     }
 </style>

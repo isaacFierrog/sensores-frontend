@@ -10,6 +10,7 @@ const config = {
 
 export default {
     get() {
+        console.log(ls.getItem('access'));
         return Servicio.get(recurso, {
             headers: {
                 'Authorization': `Bearer ${ls.getItem('access')}`,

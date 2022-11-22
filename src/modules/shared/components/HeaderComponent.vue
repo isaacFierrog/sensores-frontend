@@ -1,6 +1,6 @@
 <template>
     <header class="header">
-        <h1>SENSORES</h1>
+        <h1 class="header__titulo">SENSORES</h1>
         <NavBar></NavBar>
     </header>
 </template>
@@ -18,11 +18,17 @@ export default {
 </script>
 
 <style scoped>
-    .header{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 3rem;
-        border-bottom: .1rem solid #2cb67d;
+    .header{ border: none; }
+    .header__titulo{ display: none; }
+
+    @media screen and (min-width: 768px) {
+        .header{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            border-bottom: .1rem solid #2cb67d;
+        }
+        .header__titulo{ display: block; }
     }
 </style>
