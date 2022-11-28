@@ -21,12 +21,14 @@
             </section>
         </article>
         <!-- <hr> -->
-        <h2 v-if="!datos.length">No hay datos disponibles</h2>
-        <section class="grafica" v-else>
-            <p>{{ datos }}</p>
-            <h2>Grafica de datos</h2>
-            <Grafica :datos="datos"></Grafica>
-        </section>
+        <template v-if="datos.length">
+            <section class="grafica">
+                <h2>Grafica de datos</h2>
+                <Grafica :datos="datos"></Grafica>
+            </section>
+        </template>
+        <h2 v-else>No hay datos disponibles</h2>
+
     </div>
 </template>
 
