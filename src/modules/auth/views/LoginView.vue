@@ -5,7 +5,7 @@
 </template>
 
 <script>
-    import { defineAsyncComponent } from 'vue';
+import { defineAsyncComponent } from 'vue';
 export default {
     components: {
         LoginForm: defineAsyncComponent(

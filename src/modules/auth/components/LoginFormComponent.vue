@@ -3,7 +3,7 @@
         <Loader v-if="mostrarCarga"/>
         <h2 class="titulo-vista blanco-a">Inicio de sesion</h2>
         <form 
-            @submit.prevent="autenticarUsuario"
+            @submit.prevent="autenticar"
             class="form">
             <p class="blanco-a form__label">CORREO</p>
             <input 
@@ -56,7 +56,7 @@ export default {
             credencialesInvalidas,
             camposVacios,
             inputVacio,
-            autenticarUsuario
+            autenticar
         } = useAutenticacion();
 
         return {
@@ -67,7 +67,7 @@ export default {
             credencialesInvalidas,
             camposVacios,
             inputVacio,
-            autenticarUsuario
+            autenticar
         }
     }
 }

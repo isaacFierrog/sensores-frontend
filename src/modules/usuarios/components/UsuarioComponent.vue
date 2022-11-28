@@ -2,10 +2,10 @@
     <article class="usuario">
         <section>
             <h3 class="usuario__nombre blanco-a txt-upper">
-                {{ nombre }} {{ apellido }}
+                {{ id }}.- {{ nombre }} {{ apellido }}
             </h3>    
             <p class="blanco-b">
-                {{ correo }} | {{ mina }} | {{ area }}
+                {{ correo }} | {{ mina || 'S/A' }} | {{ area || 'S/A' }}
             </p>
         </section>
         <section class="acciones">
@@ -22,15 +22,21 @@ export default {
     props: {
         usuario: {
             type: Object,
-            required: false
+            required: true
         }
     },
     setup(props, { emit }) {
+        //Propiedades
         const { usuario } = toRefs(props);
-        const { nombre, apellido, correo, mina, area } = toRefs(usuario.value);
-        const editarUsuario = () => emit('editarUsuario', usuario.value);
+        const { nombre, apellido, correo, mina, area, id } = usuario.value;
+        const editarUsuario = () => {
+            console.log('Editar usuarios', id)
+            emit('editarUsuario', id)
+        };
 
         return {
+            //Propiedades
+            id,
             nombre,
             apellido, 
             correo, 

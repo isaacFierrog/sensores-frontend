@@ -1,10 +1,14 @@
 <template>
     <div>
-        <h1>Detalles del modulo</h1>
-        <article v-if="modulo">
-            <h3>Modulo: {{ modulo.mac }}</h3>
-            <p>Zona: {{ modulo.area }}</p>
-            <p>Mina: {{ modulo.mina }}</p>
+        <article class="modulo" v-if="modulo">
+            <section class="info">
+                <h1 class="info__titulo">{{ modulo.mac }}</h1>
+                <section>
+                    <p class="info__zona">Zona: {{ modulo.area }}</p>
+                    <p class="info__mina">Mina: {{ modulo.mina }}</p>
+                </section>
+            </section>
+            <hr>
             <section class="sensores" v-if="sensores">
                 <article v-for="sensor in sensores"
                     class="sensor"
@@ -16,16 +20,29 @@
                 </article>
             </section>
         </article>
+        <!-- <hr> -->
+        <h2 v-if="!datos.length">No hay datos disponibles</h2>
+        <section class="grafica" v-else>
+            <p>{{ datos }}</p>
+            <h2>Grafica de datos</h2>
+            <Grafica :datos="datos"></Grafica>
+        </section>
     </div>
 </template>
 
 <script>
 import { onBeforeUnmount, ref, toRefs, computed } from 'vue'
+import { defineAsyncComponent } from 'vue'
 import { useRoute } from 'vue-router'
 import modulosService from '@/services/modulosService'
 
 
 export default {
+    components: {
+        Grafica: defineAsyncComponent(
+            () => import('../components/Grafica.vue')
+        )
+    },
     setup(){
         const route = useRoute();
         const { params } = toRefs(route);
@@ -34,8 +51,17 @@ export default {
         const modulo = ref(null);
         const referenciaPeticion = ref(null);
         const tiempoPeticion = 20000;
+        const datos = ref(null)
 
         //Metodos
+        const obtenerArregloMayor = sensores => Math.max(...sensores.map(sensor => sensor.datos.length));
+        const igualarLongitudArreglos = (sensores, numMaxDatos) => {
+            return sensores.map(sensor => {
+                while(sensor.datos.length < numMaxDatos)
+                    sensor.datos.push({ valor: 0 });
+                return sensor;
+            })
+        }
         const detenerPeticion = () => {
             clearInterval(referenciaPeticion.value);
             referenciaPeticion.value = null;
@@ -45,7 +71,19 @@ export default {
                 const res = await modulosService.retrieve(params.value.id);
                 const data = await res.data;
 
+                const numeroMaxDatos = obtenerArregloMayor(data.sensores);
+                console.log(igualarLongitudArreglos(data.sensores, numeroMaxDatos))
                 modulo.value = data;
+                datos.value = data.sensores.map(sensor => {
+                    return {
+                        name: sensor.clave,
+                        data: sensor.datos.map(dato => dato.valor).reverse()
+                    }   
+                });
+
+                console.log(data)
+                console.log('DATOS PARA GRAFICAR');
+                console.log(datos.value);
             }catch(err){
                 console.log(err)
             }
@@ -73,13 +111,26 @@ export default {
             referenciaPeticion,
             sensores,
             estadoSensor,
-            ultimoValor
+            ultimoValor, 
+            datos
         }
     }
 }
 </script>
 
 <style scoped>
+    .modulo{
+        margin-bottom: 2rem;
+    }
+    .info{
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+    .info__titulo{
+        margin-right: 1rem;
+        font-size: 4.8rem;
+    }
     .sensores{
         display: flex;
         flex-wrap: wrap;
@@ -105,5 +156,8 @@ export default {
     }
     .sensor--sinestado{
         border-right: 4rem solid rgb(158, 158, 158);
+    }
+    .grafica{
+        margin-top: 2rem;
     }
 </style>

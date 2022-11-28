@@ -56,9 +56,17 @@ export default {
         const usuarioEditar = ref(null);
         const paginaAnterior = ref(null);
         const paginaSiguiente = ref(null);
-        const numeroPagina = 1;
+        let numeroPagina = 1;
 
         //Metodos
+        const editarUsuario = idUsuario => {
+            console.log('Listado', idUsuario)
+            usuarioEditar.value = usuarios.value.filter(usuario => usuario.id === idUsuario);
+
+            console.log(usuarioEditar.value);
+
+            mostrarForm.value = true;
+        };
         const mostrarUsuarios = async() => {
             try{
                 const res = await usuariosService.list();
@@ -86,11 +94,15 @@ export default {
 
         mostrarUsuarios();
         return {
+            //Propiedades
             usuarios,
             mostrarForm,
             usuarioEditar,
             paginaAnterior,
             paginaSiguiente,
+
+            //Metodos
+            editarUsuario,
             mostrarFormulario,
             cambiarPagina,
             regresarPagina

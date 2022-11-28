@@ -12,7 +12,7 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: '../sensores-backend/templates',
+    outDir: '../backend/templates',
     assetsDir: './static'
   }
 })

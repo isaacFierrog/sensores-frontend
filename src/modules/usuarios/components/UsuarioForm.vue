@@ -37,11 +37,18 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { ref, computed, toRefs } from 'vue'
 import usuariosService from '@/services/usuariosService'
 
 export default {
+    props: {
+        mostrarForm: {
+            type: Boolean,
+            default: false
+        }
+    },
     setup(props, { emit }) {
+        const { mostrarForm } = toRefs(props);
         const usuario = ref({
             correo: '',
             nombre: '',
@@ -78,7 +85,7 @@ export default {
 
         //Propiedades computadas
         const ocultarForm = computed(() => ({
-            'ocultar-layout': this.mostrarForm
+            'ocultar-layout': mostrarForm.value
         }));
 
         return {
