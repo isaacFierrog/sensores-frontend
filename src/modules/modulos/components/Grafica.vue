@@ -18,20 +18,38 @@ export default {
         datos: {
             type: Array,
             default: []
+        },
+        tiempo: {
+            type: Array,
+            default: []
         }
     },
     setup(props) {
-        const { datos } = toRefs(props)
+        const { datos, tiempo } = toRefs(props)
+        console.log('DATOS GRAFICA');
+        console.log(datos.value);
+
+        //Propiedades
+        const HORAS_DIA = 24;
+        const arregloHoras = ['1', '2', '3', '4', '5'];
         const chartOptions = {
             chart: {
                 id: 'grafica-datos'
             },
             xaxis: {
-                categories: [1,2,3,4,5,6,7,8,9,10]
+                categories: tiempo.value
             }
         }
 
-        console.log(datos);
+        //Metodos
+        // const generarHoras = () => {
+        //     for(let d = 1; d <= HORAS_DIA; d++){
+        //         chartOptions.xaxis.categories.push(d);
+        //     }
+        // };
+
+        // generarHoras();
+        console.log(arregloHoras);
 
         return { chartOptions, datos }
     } 

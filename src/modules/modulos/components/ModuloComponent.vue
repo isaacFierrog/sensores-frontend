@@ -4,9 +4,15 @@
         <h3 class="modulo__mac blanco-a txt-upper">{{ modulo.mac }}</h3>
         <footer class="modulo__footer">
             <p class="modulo__zona blanco-b txt-upper">area: {{ modulo.area }}</p>
-            <section>
-                <i class="fa-solid fa-trash acciones__icono"></i>
-                <i class="fa-solid fa-pen-to-square acciones__icono" @click="editarUsuario"></i>
+            <section class="acciones">
+                <i 
+                    class="fa-solid fa-trash acciones__icono"
+                    @click="eliminarModulo">
+                </i>
+                <i 
+                    class="fa-solid fa-pen-to-square acciones__icono" 
+                    @click="editarModulo">
+                </i>
             </section>
         </footer>
     </div>
@@ -17,6 +23,20 @@ export default {
     props: {
         modulo: {
             type: Object
+        }
+    },
+    setup() {
+        //Metodos
+        const eliminarModulo = () => {
+            console.log('Eliminar modulo')
+        };
+        const editarModulo = () => {
+            console.log('Editar modulo')
+        };
+        return {
+            //Metodos
+            eliminarModulo,
+            editarModulo
         }
     }
 }

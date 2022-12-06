@@ -27,5 +27,12 @@ export default {
                 'Authorization': `Bearer ${ localStorage.getItem('access') }`
             }
         })
+    },
+    update(id, data){
+        return API.patch(`${recurso}${id}/`, data, {
+            headers: {
+                'Authorization': `Bearer ${ localStorage.getItem('access') }`
+            }
+        })
     }
 }
