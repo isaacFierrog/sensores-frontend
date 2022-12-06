@@ -64,6 +64,10 @@ export default {
         verFormulario: {
             type: Boolean,
             default: false
+        },
+        modulo: {
+            type: Object,
+            required: false
         }
     },  
     setup(props, context) {
@@ -84,7 +88,7 @@ export default {
             crearModulo,
             ocultarFormulario,
             agregarSensores,
-            eliminarSensores
+            eliminarSensores,
         } = useModuloForm(props, context);
 
         return {
@@ -104,7 +108,7 @@ export default {
             crearModulo,
             ocultarFormulario,
             agregarSensores,
-            eliminarSensores
+            eliminarSensores,
         }
     }
 }

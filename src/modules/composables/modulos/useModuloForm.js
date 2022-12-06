@@ -3,7 +3,7 @@ import modulosServicio from '../../services/modulosServicio';
 
 export default (props, { emit }) => {
     //Propiedades
-    const { verFormulario } = toRefs(props);
+    const { verFormulario, modulo } = toRefs(props);
     const mac = ref('');
     const mina = ref('');
     const area = ref('');
@@ -20,6 +20,16 @@ export default (props, { emit }) => {
     const areas = ref(['A', 'B', 'C', 'D']);
 
     //Metodos
+    const cargarValoresEdicion = () => {
+        if(!modulo.value) return;
+        mac.value = modulo.value.mac;
+        mina.value = modulo.value.mina;
+        area.value = modulo.value.area;
+        sensores.value = modulo.value.sensores.map(sensor => ({
+            clave: sensor.clave
+        }))
+        numeroSensores.value = sensores.value.length;
+    };
     const refrescarModulos = () => emit('refrescarModulos');
     const reiniciarCampos = () => {
         mac.value = '';
@@ -46,7 +56,7 @@ export default (props, { emit }) => {
         }
         ocultarMensajes();
         numeroSensores.value++;
-        const nuevoSensor = { clave: `${mac.value}-${numeroSensores.value}` };
+        const nuevoSensor = { clave: `${mac.value.toUpperCase()}-${numeroSensores.value}` };
         sensores.value.push(nuevoSensor);
     };
     const eliminarSensores = () => {
@@ -62,12 +72,22 @@ export default (props, { emit }) => {
         }
 
         try{
-            const res = await modulosServicio.create({
-                mac: mac.value.toUpperCase(),
-                mina: mina.value.toUpperCase(),
-                area: area.value.toUpperCase(),
-                sensores: sensores.value
-            });
+            let res = null;
+            if(modulo.value){
+                res = await modulosServicio.update(modulo.value.id, {
+                    mac: mac.value.toUpperCase(),
+                    mina: mina.value.toUpperCase(),
+                    area: area.value.toUpperCase(),
+                    sensores: sensores.value
+                });
+            }else{
+                res = await modulosServicio.create({
+                    mac: mac.value.toUpperCase(),
+                    mina: mina.value.toUpperCase(),
+                    area: area.value.toUpperCase(),
+                    sensores: sensores.value
+                });
+            }
             const { data } = await res;
             refrescarModulos();
             reiniciarCampos()
@@ -86,10 +106,19 @@ export default (props, { emit }) => {
         return !!mac.value.length && !!mina.value.length && !!area.value.length;
     });
 
+    cargarValoresEdicion();
     watch(mac, (newValue, oldValue) => {
+        let contador = 1;
         if(!newValue.length) numeroSensores.value = 0;
-    });
+        sensores.value = sensores.value.map(() => {
+            const clave = `${newValue.toUpperCase()}-${contador}`;
+            contador++;
+            return { clave };
+        })
 
+    });
+    watch(verFormulario, () => cargarValoresEdicion());
+    
     return {
         verFormulario,
         mac,
@@ -103,10 +132,12 @@ export default (props, { emit }) => {
         mensajeCampos,
         minas,
         areas,
+
+        //Propiedades computadas
         mostrarFormulario,
         crearModulo,
         ocultarFormulario,
         agregarSensores,
-        eliminarSensores
+        eliminarSensores, 
     }
 };
