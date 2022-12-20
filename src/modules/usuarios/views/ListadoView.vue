@@ -5,12 +5,14 @@
             <i class="fa-solid fa-plus"></i>
             Crear usuario
         </button>
-        <Usuario
-            v-for="usuario in usuarios"
-            :usuario="usuario" 
-            :key="usuario"
-            @editarUsuario="editarUsuario">
-        </Usuario>
+        <template v-if="usuarios">
+            <Usuario
+                v-for="usuario in usuarios"
+                :usuario="usuario" 
+                :key="usuario"
+                @editarUsuario="editarUsuario">
+            </Usuario>
+        </template>
         <UsuarioForm 
             :mostrarForm="mostrarForm"
             :usuario="usuarioEditar"
