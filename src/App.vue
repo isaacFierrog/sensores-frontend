@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <Loader v-if="procesandoSolicitud"></Loader>
-    <Header v-if="autenticado"></Header>
+    <Header v-if="usuarioAutenticado"></Header>
     <router-view></router-view>
   </div>
 </template>
@@ -10,6 +10,8 @@
 import { defineAsyncComponent } from 'vue'
 import { storeToRefs } from 'pinia'
 import useMainStore from './store/useMainStore'
+import useAuthStore from './modules/auth/store/useAuthStore'
+
 
 export default {
   components: {
@@ -21,11 +23,29 @@ export default {
     )
   },  
   setup() {
+    //Data
     const store = useMainStore();
-    const { autenticado, procesandoSolicitud } = storeToRefs(store);
+    const { procesandoSolicitud } = storeToRefs(store);
+    
+    const authStore = useAuthStore();
+    const {
+      usuarioAutenticado,
+      refRenovarToken,
+      tiempoActualizacion
+    } = storeToRefs(authStore);
+
+    //Metodos
+    const { renovarToken } = authStore;
+
+    if(usuarioAutenticado.value)
+      refRenovarToken.value = setInterval(
+        () => renovarToken(),
+        tiempoActualizacion.value
+      );
+    
 
     return {
-      autenticado, 
+      usuarioAutenticado, 
       procesandoSolicitud
     }
   }

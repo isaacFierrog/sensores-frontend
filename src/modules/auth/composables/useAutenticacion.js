@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import useMainStore from '@/store/useMainStore'
+import useAuthStore from '../../'
 
 const useAutenticacion = () => {
     //Instancias

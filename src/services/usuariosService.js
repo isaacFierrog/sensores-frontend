@@ -5,17 +5,9 @@ const recurso = 'usuarios/';
 
 export default {
     list(){
-        return API.get(recurso, {
-            headers: {
-                'Authorization': `Bearer ${ localStorage.getItem('access') }`
-            }
-        });
+        return API.get(recurso);
     },
     create(data){
-        return API.post(recurso, data, {
-            headers: {
-                'Authorization': `Bearer ${ localStorage.getItem('access') }`
-            }
-        });
+        return API.post(recurso, data);
     }
 }
